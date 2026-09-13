@@ -1406,10 +1406,13 @@ const AccountTableRow = memo(function AccountTableRow({
                             )}
                             {visibleColumns.plan && (
                               <TableCell>
-                                <PlanBadge
-                                  planType={account.plan_type}
-                                  workspaceId={accountWorkspaceId(account)}
-                                />
+                                <div className="flex flex-col items-start gap-1.5">
+                                  <PlanBadge
+                                    planType={account.plan_type}
+                                    workspaceId={accountWorkspaceId(account)}
+                                  />
+                                  <SubscriptionExpiryDate expiresAt={account.subscription_expires_at} />
+                                </div>
                               </TableCell>
                             )}
                             {visibleColumns.subscription && (
@@ -12876,6 +12879,14 @@ function OperationProgressToast({
       ) : null}
     </div>
   );
+}
+
+function SubscriptionExpiryDate({ expiresAt }: { expiresAt?: string }) {
+  const { i18n } = useTranslation();
+  if (!expiresAt) return null;
+  const timestamp = Date.parse(expiresAt);
+  if (Number.isNaN(timestamp)) return null;
+  return <time dateTime={expiresAt} className="whitespace-nowrap text-[11px] text-muted-foreground tabular-nums">{new Date(timestamp).toLocaleString(i18n.language, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</time>;
 }
 
 function formatPlanLabel(planType?: string): string {
